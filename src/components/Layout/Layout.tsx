@@ -9,11 +9,6 @@ interface LayoutProps extends PropsWithChildren {}
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
 
-  useEffect(() => {
-    const refresh_token = getAuthTokens().access_token;
-    if (!refresh_token) router.push("/auth");
-  }, []);
-
   return (
     <PageContainer maxWidth="xl" sx={{ display: "flex", gap: 3 }}>
       <Box width="100%">{children}</Box>

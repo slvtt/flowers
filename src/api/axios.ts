@@ -1,24 +1,24 @@
-import axios from "axios";
-import { AxiosRequestHeaders } from "axios";
-import createAuthRefreshInterceptor from "axios-auth-refresh";
-import { getAuthTokens, removeAuthTokens } from "src/utils/helpers/authHelper";
-import { getLocationOrigin } from "src/utils/helpers/getLocationHelper";
-import { errorHandler } from "src/api/errorHandler";
+import axios from 'axios';
+import { AxiosRequestHeaders } from 'axios';
+import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import { getAuthTokens, removeAuthTokens } from 'src/utils/helpers/authHelper';
+import { getLocationOrigin } from 'src/utils/helpers/getLocationHelper';
+import { errorHandler } from 'src/api/errorHandler';
 
 //set your postfix
 const apiInstance = axios.create({
-  baseURL: process.env.API_URL + "/api",
+  baseURL: 'https://65688c5f9927836bd97507ed.mockapi.io'
 });
 
 const retryInstance = axios.create({
-  baseURL: process.env.API_URL,
+  baseURL: 'https://65688c5f9927836bd97507ed.mockapi.io'
 });
 
-retryInstance.interceptors.request.use((config) => {
+retryInstance.interceptors.request.use(config => {
   // url is /api/api/etc..
   if (!config.headers) config.headers = {} as AxiosRequestHeaders;
 
-  config.headers["Authorization"] = `Bearer ${getAuthTokens().access_token}`;
+  config.headers['Authorization'] = `Bearer ${getAuthTokens().access_token}`;
 
   return Promise.resolve(config);
 });
@@ -63,7 +63,7 @@ const failedRequest = (failReq: any) => {
 
 createAuthRefreshInterceptor(apiInstance, failedRequest, {
   statusCodes: [401, 403],
-  retryInstance,
+  retryInstance
 });
 
 const isTokenRequest = (requestUrl?: string) => {
@@ -71,34 +71,33 @@ const isTokenRequest = (requestUrl?: string) => {
     return true;
   }
   //set your nonJwtUrls
-  const nonJwtUrls = ["/auth/phone", "/auth/admin/code"];
+  const nonJwtUrls = ['/auth'];
 
-  return !nonJwtUrls.find((url) => url === requestUrl);
+  return !nonJwtUrls.find(url => url === requestUrl);
 };
 
 apiInstance.interceptors.request.use(
-    (config) => {
-      const originalRequest = config;
-      const { access_token } = getAuthTokens();
+  config => {
+    const originalRequest = config;
+    const { access_token } = getAuthTokens();
 
-      if (access_token && isTokenRequest(originalRequest.url)) {
-        if (!originalRequest.headers)
-          originalRequest.headers = {} as AxiosRequestHeaders;
+    if (access_token && isTokenRequest(originalRequest.url)) {
+      if (!originalRequest.headers) originalRequest.headers = {} as AxiosRequestHeaders;
 
-        originalRequest.headers["Authorization"] = `Bearer ${access_token}`;
-      }
+      originalRequest.headers['Authorization'] = `Bearer ${access_token}`;
+    }
 
-      return Promise.resolve(originalRequest);
-    },
-    (err) => Promise.reject(err)
+    return Promise.resolve(originalRequest);
+  },
+  err => Promise.reject(err)
 );
 
 // not required
 apiInstance.interceptors.response.use(
-    (response) => response,
-    (err) => {
-      errorHandler(err);
-    }
+  response => response,
+  err => {
+    errorHandler(err);
+  }
 );
 
 export default apiInstance;

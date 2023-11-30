@@ -6,12 +6,14 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "src/theme";
 import { CssBaseline } from "@mui/material";
 import "src/index.css";
+import "react-toastify/dist/ReactToastify.css";
 import createEmotionCache from "src/createEmotionCache";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import ErrorBoundary from "src/components/ErrorBoundary/ErrorBoundary";
 import { Provider } from "react-redux";
 import { store } from "src/redux/store";
 import Head from "next/head";
+import Alert from "src/ui/Alert/Alert";
 
 interface MyAppProps extends AppProps {
   emotionCache?: EmotionCache;
@@ -35,6 +37,7 @@ export default function MyApp(props: MyAppProps) {
             <ThemeProvider theme={theme}>
               <CssBaseline />
               {getLayout(<Component {...pageProps} />)}
+              <Alert />
             </ThemeProvider>
           </CacheProvider>
         </Provider>
